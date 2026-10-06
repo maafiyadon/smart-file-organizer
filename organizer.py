@@ -2,6 +2,11 @@ import os
 import shutil
 from pathlib import Path
 import sys
+<<<<<<< HEAD
+
+from gradio_client import file
+=======
+>>>>>>> upstream/main
 
 
 FILE_CATEGORIES = {
@@ -23,7 +28,7 @@ def get_category(extension):
     return "Others"
 
 
-def organize_folder(folder_path):
+def organize_folder(folder_path, dry_run=False):
     folder = Path(folder_path)
 
     if not folder.exists():
@@ -58,9 +63,12 @@ def organize_folder(folder_path):
                 target = destination / f"{stem}_{counter}{suffix}"
                 counter += 1
 
-        shutil.move(str(file), str(target))
-
+        if dry_run:
+            print(f"[DRY RUN] {file.name} → {category}/")
+        else:
+            shutil.move(str(file), str(target))
         print(f"✓ {file.name} → {category}/")
+
         moved_files += 1
 
     print(f"\nDone! Organized {moved_files} file(s).")
@@ -72,9 +80,13 @@ if __name__ == "__main__":
     print("📂 Smart File Organizer")
     print("-" * 30)
 
-    if len(sys.argv) > 1:
-        folder = sys.argv[1]
+    dry_run = "--dry-run" in sys.argv
+
+    arguments = [arg for arg in sys.argv[1:] if arg != "--dry-run"]
+
+    if arguments:
+        folder = arguments[0]
     else:
         folder = input("Enter folder path: ").strip()
 
-    organize_folder(folder)
+    organize_folder(folder, dry_run=dry_run)
